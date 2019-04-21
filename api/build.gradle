@@ -1,0 +1,6 @@
+dependencies {
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
+    compile group: 'org.apache.httpcomponents', name: 'fluent-hc', version: '4.5.8'
+
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.8'
+}

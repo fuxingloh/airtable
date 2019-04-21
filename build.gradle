@@ -1,0 +1,46 @@
+subprojects {
+    apply plugin: 'idea'
+    apply plugin: 'java'
+
+    group 'dev.fuxing'
+    version '1.0-SNAPSHOT'
+
+    ext.jUnitVersion = '5.4.2'
+    ext.guiceVersion = '4.2.2'
+
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    compileJava.options.encoding = 'UTF-8'
+    compileTestJava.options.encoding = 'UTF-8'
+
+    task sourcesJar(type: Jar, dependsOn: classes) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+
+    artifacts {
+        archives sourcesJar
+    }
+
+    configurations.all { resolutionStrategy.cacheChangingModulesFor 0, 'seconds' }
+
+    dependencies {
+        testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: jUnitVersion
+        testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: jUnitVersion
+        testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: jUnitVersion
+        
+        testRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: jUnitVersion
+
+
+        compile group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
+    }
+
+    repositories {
+        mavenCentral()
+    }
+
+    test {
+        useJUnitPlatform()
+    }
+}
