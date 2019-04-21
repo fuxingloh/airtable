@@ -1,7 +1,10 @@
 package dev.fuxing.airtable;
 
-import org.apache.http.client.CookieStore;
+import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.ServiceUnavailableRetryStrategy;
+import org.apache.http.client.config.CookieSpecs;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.fluent.Executor;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
@@ -13,10 +16,12 @@ import org.apache.http.conn.ssl.SSLInitializationException;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.apache.http.protocol.HttpContext;
 
 import javax.net.ssl.SSLContext;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -27,7 +32,8 @@ import java.util.List;
  */
 public final class AirtableExecutor {
 
-    final static PoolingHttpClientConnectionManager CONNMGR;
+    final static PoolingHttpClientConnectionManager CONNECTION_MANAGER;
+    final static RequestConfig REQUEST_CONFIG;
     final static HttpClient CLIENT;
 
     static {
@@ -49,23 +55,27 @@ public final class AirtableExecutor {
                 .register("https", ssl != null ? ssl : SSLConnectionSocketFactory.getSocketFactory())
                 .build();
 
-        CONNMGR = new PoolingHttpClientConnectionManager(sfr);
-        CONNMGR.setDefaultMaxPerRoute(100);
-        CONNMGR.setMaxTotal(200);
-        CONNMGR.setValidateAfterInactivity(1000);
-        CLIENT = HttpClientBuilder.create()
-                .setConnectionManager(CONNMGR)
-                .build();
+        CONNECTION_MANAGER = new PoolingHttpClientConnectionManager(sfr);
+        CONNECTION_MANAGER.setMaxTotal(20);
+        CONNECTION_MANAGER.setDefaultMaxPerRoute(10);
+        CONNECTION_MANAGER.setValidateAfterInactivity(1000);
 
-        // TODO(fuxing): 429 auto retry
+        REQUEST_CONFIG = RequestConfig.custom()
+                .setCookieSpec(CookieSpecs.STANDARD).build();
+
+        CLIENT = HttpClientBuilder.create()
+                .setConnectionManager(CONNECTION_MANAGER)
+                .setServiceUnavailableRetryStrategy(new RetryStrategy(2))
+                .setDefaultRequestConfig(REQUEST_CONFIG)
+                .build();
     }
 
     public static Executor newInstance() {
         return Executor.newInstance(CLIENT)
-                .use(new EmptyCookieStore());
+                .use(new CookieStore());
     }
 
-    public static final class EmptyCookieStore implements CookieStore {
+    public static final class CookieStore implements org.apache.http.client.CookieStore {
 
         @Override
         public void addCookie(Cookie cookie) {
@@ -74,7 +84,7 @@ public final class AirtableExecutor {
 
         @Override
         public List<Cookie> getCookies() {
-            return null;
+            return Collections.emptyList();
         }
 
         @Override
@@ -85,6 +95,39 @@ public final class AirtableExecutor {
         @Override
         public void clear() {
 
+        }
+    }
+
+    public static final class RetryStrategy implements ServiceUnavailableRetryStrategy {
+
+        private final int maxCount;
+
+        public RetryStrategy(int maxCount) {
+            this.maxCount = maxCount;
+        }
+
+        @Override
+        public boolean retryRequest(HttpResponse response, int executionCount, HttpContext context) {
+            int statusCode = response.getStatusLine().getStatusCode();
+            if (statusCode == 429 && executionCount < maxCount) {
+                sleep();
+                return true;
+            }
+
+            return false;
+        }
+
+        @Override
+        public long getRetryInterval() {
+            return 0;
+        }
+
+        private void sleep() {
+            try {
+                Thread.sleep(30_001);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 }

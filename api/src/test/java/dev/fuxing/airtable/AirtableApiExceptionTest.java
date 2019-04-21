@@ -19,7 +19,9 @@ class AirtableApiExceptionTest {
 
         AirtableApi.Table table = api.base("appKZCZBCeAouRBgW").table("Opportunities");
 
-        AirtableApiException exception = assertThrows(AirtableApiException.class, table::list);
+        AirtableApiException exception = assertThrows(AirtableApiException.class, () -> {
+            AirtableTable.PaginationList list = table.list();
+        });
         assertEquals(exception.getCode(), 401);
     }
 
