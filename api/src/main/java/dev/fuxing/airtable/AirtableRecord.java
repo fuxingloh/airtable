@@ -141,7 +141,7 @@ public class AirtableRecord {
     /**
      * @param name         of the field
      * @param collaborator object
-     * @see CollaboratorField documents for Patch & Create operations
+     * @see CollaboratorField documents for Patch and Create operations
      */
     public void putField(String name, CollaboratorField collaborator) {
         putField(name, (Object) collaborator);

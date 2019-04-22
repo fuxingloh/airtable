@@ -237,7 +237,7 @@ public interface AirtableTable {
     boolean delete(String recordId);
 
     /**
-     * A fluent interface for querying records in Airtable > Application > Table.
+     * A fluent interface for querying records in Airtable/Application/Table.
      */
     interface QuerySpec {
 

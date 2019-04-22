@@ -1,9 +1,21 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.5.3"
+    }
+}
+apply plugin: 'io.codearte.nexus-staging'
+
 subprojects {
     apply plugin: 'idea'
     apply plugin: 'java'
+    apply plugin: 'signing'
+    apply plugin: 'maven'
 
     group 'dev.fuxing'
-    version '1.0-SNAPSHOT'
+    version '0.1'
 
     ext.jUnitVersion = '5.4.2'
     ext.guiceVersion = '4.2.2'
@@ -14,24 +26,12 @@ subprojects {
     compileJava.options.encoding = 'UTF-8'
     compileTestJava.options.encoding = 'UTF-8'
 
-    task sourcesJar(type: Jar, dependsOn: classes) {
-        classifier = 'sources'
-        from sourceSets.main.allSource
-    }
-
-    artifacts {
-        archives sourcesJar
-    }
-
-    configurations.all { resolutionStrategy.cacheChangingModulesFor 0, 'seconds' }
-
     dependencies {
         testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: jUnitVersion
         testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: jUnitVersion
         testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: jUnitVersion
-        
-        testRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: jUnitVersion
 
+        testRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: jUnitVersion
 
         compile group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
     }
@@ -43,4 +43,74 @@ subprojects {
     test {
         useJUnitPlatform()
     }
+
+    task javadocJar(type: Jar) {
+        classifier = 'javadoc'
+        from javadoc
+    }
+
+    task sourcesJar(type: Jar) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+
+    artifacts {
+        archives javadocJar, sourcesJar
+    }
+
+    signing {
+        sign configurations.archives
+    }
+
+    // uploadArchives closeAndPromoteRepository
+    // OSSRH publication
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+                // POM signature
+                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+                // Target repository
+                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                    authentication(userName: ossrhUser, password: ossrhPassword)
+                }
+                pom {
+                    artifactId = rootProject.name + '-' + project.name
+
+                    project {
+                        name rootProject.name + '-' + project.name
+                        description project.description
+                        packaging 'jar'
+                        url 'https://github.com/fuxingloh/airtable'
+
+                        scm {
+                            connection 'scm:git:https://github.com/fuxingloh/airtable.git'
+                            developerConnection 'scm:git:git@github.com:fuxingloh/airtable.git'
+                            url 'https://github.com/fuxingloh/airtable.git'
+                        }
+
+                        licenses {
+                            license {
+                                name 'Apache License 2.0'
+                                url 'https://github.com/fuxingloh/airtable/blob/master/LICENSE'
+                                distribution 'repo'
+                            }
+                        }
+
+                        developers {
+                            developer {
+                                id = 'fuxing'
+                                name = 'Fuxing Loh'
+                                email = 'fuxing@fuxing.dev'
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+nexusStaging {
+    username = ossrhUser
+    password = ossrhPassword
 }

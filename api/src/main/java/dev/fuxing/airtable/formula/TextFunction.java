@@ -54,7 +54,7 @@ public interface TextFunction extends AirtableFunction {
      * <p>
      * To concatenate static text, surround it with double quotation marks. To concatenate double quotation marks, you need to use a backslash (\) as an escape character.
      * <p>
-     * Equivalent to use of the & operator.
+     * Equivalent to use of the '&amp;' operator.
      */
     TextFunction CONCATENATE = new TextFunction() {
         @Override
