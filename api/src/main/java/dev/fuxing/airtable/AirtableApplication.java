@@ -5,7 +5,7 @@ package dev.fuxing.airtable;
  * Date: 2019-04-21
  * Time: 00:17
  */
-public interface AirtableBase {
+public interface AirtableApplication {
 
     /**
      * @param table name of a table from Airtable.

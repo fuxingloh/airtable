@@ -41,7 +41,6 @@ public interface AirtableTable {
         });
     }
 
-
     /**
      * To iterator records in a table.
      * Returned records do not include any fields with "empty" values, e.g. "", [], or false.
@@ -202,7 +201,32 @@ public interface AirtableTable {
      * @param record to patch
      * @return Patched Record
      */
-    AirtableRecord patch(AirtableRecord record);
+    default AirtableRecord patch(AirtableRecord record) {
+        return patch(record, false);
+    }
+
+    /**
+     * To update some (but not all) fields of records, issue a PATCH request to the record endpoint.
+     * Any fields that are not included will not be updated.
+     * <p>
+     * To add attachments, add new attachment objects to the existing array.
+     * Be sure to include all existing attachment objects that you wish to retain.
+     * For the new attachments being added, url is required, and filename is optional.
+     * To remove attachments, include the existing array of attachment objects, excluding any that you wish to remove.
+     * <p>
+     * To set a collaborator, set the field value to a user object.
+     * A user object must contain either an id or an email that uniquely identifies a user who this base is shared with.
+     * An id takes precedence over email if both are present.
+     * Any missing properties will be filled in automatically based on the matching user.
+     * <p>
+     * Values for Computed values are automatically computed by Airtable and cannot be directly created.
+     *
+     * @param record   to patch
+     * @param typecast The Airtable API will perform best-effort automatic data conversion from string values if the typecast parameter is passed in.
+     *                 Automatic conversion is disabled by default to ensure data integrity, but it may be helpful for integrating with 3rd party data sources.
+     * @return Patched Record
+     */
+    AirtableRecord patch(AirtableRecord record, boolean typecast);
 
     /**
      * To delete a record from Table, issue a DELETE request to the record endpoint.
@@ -213,7 +237,7 @@ public interface AirtableTable {
     boolean delete(String recordId);
 
     /**
-     * A fluent interface for querying records in Airtable > Base > Table.
+     * A fluent interface for querying records in Airtable > Application > Table.
      */
     interface QuerySpec {
 
@@ -281,7 +305,7 @@ public interface AirtableTable {
          * @return QuerySpec instance for fluent chaining
          * @see QuerySpec#filterByFormula(String)
          */
-        default QuerySpec filterByFormula(AirtableFunction function, AirtableFormula.Object objects) {
+        default QuerySpec filterByFormula(AirtableFunction function, AirtableFormula.Object... objects) {
             return filterByFormula(function.apply(objects));
         }
 
@@ -383,7 +407,7 @@ public interface AirtableTable {
          * @see QuerySpec#userLocale(String)
          */
         default QuerySpec userLocale(Locale locale) {
-            return userLocale(locale.toLanguageTag());
+            return userLocale(locale.toLanguageTag().toLowerCase());
         }
 
         /**

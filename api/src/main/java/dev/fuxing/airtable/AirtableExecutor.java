@@ -24,6 +24,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Created by: Fuxing
@@ -99,6 +100,7 @@ public final class AirtableExecutor {
     }
 
     public static final class RetryStrategy implements ServiceUnavailableRetryStrategy {
+        private static final Logger logger = Logger.getLogger(RetryStrategy.class.getName());
 
         private final int maxCount;
 
@@ -110,6 +112,7 @@ public final class AirtableExecutor {
         public boolean retryRequest(HttpResponse response, int executionCount, HttpContext context) {
             int statusCode = response.getStatusLine().getStatusCode();
             if (statusCode == 429 && executionCount < maxCount) {
+                logger.info("429: Airtable Retry");
                 sleep();
                 return true;
             }

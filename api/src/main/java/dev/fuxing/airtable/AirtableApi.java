@@ -49,24 +49,37 @@ public class AirtableApi {
     }
 
     /**
-     * Go to https://airtable.com/api to find the name of your base.
+     * Go to https://airtable.com/api to find the name of your app.
      *
-     * @param base id of the base. (prefixed with 'app')
-     * @return AirtableBase interface
+     * @param app id of the app. (prefixed with 'app')
+     * @return AirtableApplication interface
+     * @see AirtableApi#app(String) 'base' is just a synonym for 'app'
      */
-    public Base base(String base) {
-        return new Base(base);
+    public Application base(String app) {
+        return app(app);
     }
 
     /**
-     * Implemented AirtableBase interface.
+     * Go to https://airtable.com/api to find the name of your app.
      *
-     * @see AirtableBase inteface for all available methods.
+     * @param app id of the app. (prefixed with 'app')
+     * @return AirtableApplication interface
      */
-    public final class Base implements AirtableBase {
+    public Application app(String app) {
+        return new Application(app);
+    }
+
+    /**
+     * Implemented AirtableApplication interface.
+     * <p>
+     * It's named Application because Airtable named it Application.
+     *
+     * @see AirtableApplication inteface for all available methods.
+     */
+    public final class Application implements AirtableApplication {
         private final String base;
 
-        private Base(String base) {
+        private Application(String base) {
             this.base = base;
         }
 
@@ -133,7 +146,7 @@ public class AirtableApi {
             try {
                 Request request = Request.Post(createUri())
                         .addHeader("Authorization", "Bearer " + apiKey)
-                        .bodyString(toString(record), ContentType.APPLICATION_JSON);
+                        .bodyString(toString(record, typecast), ContentType.APPLICATION_JSON);
 
                 JsonNode node = executor.execute(request)
                         .handleResponse(AirtableApi.this::handleResponse);
@@ -154,19 +167,22 @@ public class AirtableApi {
                 JsonNode node = executor.execute(request)
                         .handleResponse(AirtableApi.this::handleResponse);
 
-                if (node == null) return null;
                 return new AirtableRecord(node);
             } catch (IOException e) {
                 throw new AirtableClientException(e);
+            } catch (AirtableApiException e) {
+                // For Get Request, status 404 is resolved into null
+                if (e.getCode() == 404) return null;
+                throw e;
             }
         }
 
         @Override
-        public AirtableRecord patch(AirtableRecord record) {
+        public AirtableRecord patch(AirtableRecord record, boolean typecast) {
             try {
-                Request request = Request.Post(createUri(record.getId()))
+                Request request = Request.Patch(createUri(record.getId()))
                         .addHeader("Authorization", "Bearer " + apiKey)
-                        .bodyString(toString(record), ContentType.APPLICATION_JSON);
+                        .bodyString(toString(record, typecast), ContentType.APPLICATION_JSON);
 
                 JsonNode node = executor.execute(request)
                         .handleResponse(AirtableApi.this::handleResponse);
@@ -180,13 +196,12 @@ public class AirtableApi {
         @Override
         public boolean delete(String recordId) {
             try {
-                byte[] bytes = Request.Delete(createUri(recordId))
-                        .addHeader("Authorization", "Bearer " + apiKey)
-                        .execute()
-                        .returnContent()
-                        .asBytes();
+                Request request = Request.Delete(createUri(recordId))
+                        .addHeader("Authorization", "Bearer " + apiKey);
 
-                JsonNode node = OBJECT_MAPPER.readTree(bytes);
+                JsonNode node = executor.execute(request)
+                        .handleResponse(AirtableApi.this::handleResponse);
+
                 return node.path("deleted").asBoolean();
             } catch (IOException e) {
                 throw new AirtableClientException(e);
@@ -197,8 +212,12 @@ public class AirtableApi {
          * @param record to convert to json string
          * @return json string
          */
-        private String toString(AirtableRecord record) {
+        private String toString(AirtableRecord record, boolean typecast) {
             ObjectNode node = OBJECT_MAPPER.createObjectNode();
+            if (typecast) {
+                node.put("typecast", typecast);
+            }
+
             ObjectNode fields = node.putObject("fields");
             record.getFields().forEach(fields::set);
             try {
@@ -244,7 +263,6 @@ public class AirtableApi {
 
             StatusLine status = response.getStatusLine();
             if (status.getStatusCode() == 200) return node;
-            if (status.getStatusCode() == 404) return null;
 
             JsonNode error = node.path("error");
             if (error.isTextual()) {

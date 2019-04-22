@@ -1,5 +1,7 @@
 package dev.fuxing.airtable.formula;
 
+import dev.fuxing.airtable.AirtableRecord;
+
 import java.util.function.Supplier;
 
 /**
@@ -28,7 +30,7 @@ public interface AirtableFormula {
 
         @Override
         public String toString() {
-            return supplier.get();
+            return "(" + supplier.get() + ")";
         }
     }
 

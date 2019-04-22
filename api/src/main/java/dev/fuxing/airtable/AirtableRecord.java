@@ -26,6 +26,14 @@ public class AirtableRecord {
     private Map<String, JsonNode> fields;
     private Date createdTime;
 
+    /**
+     * @param id recordId
+     */
+    public AirtableRecord(String id) {
+        this.fields = new HashMap<>();
+        this.id = id;
+    }
+
     public AirtableRecord() {
         this.fields = new HashMap<>();
     }
@@ -131,29 +139,38 @@ public class AirtableRecord {
     }
 
     /**
-     * @param name   of the field
-     * @param values array object
-     */
-    public void putField(String name, List<String> values) {
-        putField(name, (Object) values);
-    }
-
-    /**
-     * @param name       of the field
-     * @param attachment object
-     * @see AttachmentField documents for Patch & Create operations
-     */
-    public void putField(String name, AttachmentField attachment) {
-        putField(name, (Object) attachment);
-    }
-
-    /**
      * @param name         of the field
      * @param collaborator object
      * @see CollaboratorField documents for Patch & Create operations
      */
     public void putField(String name, CollaboratorField collaborator) {
         putField(name, (Object) collaborator);
+    }
+
+    /**
+     * putField for any Array values
+     *
+     * @param name   of the field
+     * @param values array object, Collaborator, Attachment, Values
+     */
+    public void putField(String name, List<Object> values) {
+        putField(name, (Object) values);
+    }
+
+    /**
+     * @param name   of the field
+     * @param fields Attachment list
+     */
+    public void putFieldAttachments(String name, List<AttachmentField> fields) {
+        putField(name, fields);
+    }
+
+    /**
+     * @param name   of the field
+     * @param fields Collaborator list
+     */
+    public void putFieldCollaborators(String name, List<CollaboratorField> fields) {
+        putField(name, fields);
     }
 
     /**
@@ -254,13 +271,34 @@ public class AirtableRecord {
 
     /**
      * @param name of the field
-     * @return wrapped into AttachmentField
+     * @return wrapped into list of CollaboratorField
      */
     @Nullable
-    public AttachmentField getFieldAttachment(String name) {
+    public List<CollaboratorField> getFieldCollaboratorList(String name) {
         JsonNode field = getField(name);
         if (field == null) return null;
-        return new AttachmentField(field);
+
+        List<CollaboratorField> fields = new ArrayList<>();
+        for (JsonNode node : field) {
+            fields.add(new CollaboratorField(node));
+        }
+        return fields;
+    }
+
+    /**
+     * @param name of the field
+     * @return wrapped into list of AttachmentField
+     */
+    @Nullable
+    public List<AttachmentField> getFieldAttachmentList(String name) {
+        JsonNode field = getField(name);
+        if (field == null) return null;
+
+        List<AttachmentField> fields = new ArrayList<>();
+        for (JsonNode node : field) {
+            fields.add(new AttachmentField(node));
+        }
+        return fields;
     }
 
     @Override

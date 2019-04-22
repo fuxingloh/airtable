@@ -1,5 +1,6 @@
 package dev.fuxing.airtable.fields;
 
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import java.util.HashMap;
@@ -31,8 +32,6 @@ public final class AttachmentField {
     private String type;
 
     // These may be available if the attachment is an image
-    private Integer width;
-    private Integer height;
     private Map<String, Thumbnail> thumbnails;
 
     public AttachmentField() {
@@ -46,16 +45,9 @@ public final class AttachmentField {
         this.size = field.path("size").asLong();
         this.type = field.path("type").asText();
 
-        if (field.has("width")) {
-            this.width = field.path("width").asInt();
-        }
-        if (field.has("height")) {
-            this.height = field.path("height").asInt();
-        }
-
         if (field.has("thumbnails")) {
             this.thumbnails = new HashMap<>();
-            field.fields().forEachRemaining(entry -> {
+            field.path("thumbnails").fields().forEachRemaining(entry -> {
                 this.thumbnails.put(entry.getKey(), new Thumbnail(entry.getValue()));
             });
         }
@@ -93,16 +85,20 @@ public final class AttachmentField {
         return type;
     }
 
-    public Integer getWidth() {
-        return width;
-    }
-
-    public Integer getHeight() {
-        return height;
-    }
-
     public Map<String, Thumbnail> getThumbnails() {
         return thumbnails;
+    }
+
+    /**
+     * @return Json Serializer for POST
+     */
+    @JsonValue
+    public Map<String, String> getJsonValue() {
+        Map<String, String> map = new HashMap<>();
+        if (id != null) map.put("id", id);
+        if (url != null) map.put("url", url);
+        if (filename != null) map.put("filename", filename);
+        return map;
     }
 
     /**
@@ -163,8 +159,6 @@ public final class AttachmentField {
                 ", filename='" + filename + '\'' +
                 ", size=" + size +
                 ", type='" + type + '\'' +
-                ", width=" + width +
-                ", height=" + height +
                 ", thumbnails=" + thumbnails +
                 '}';
     }

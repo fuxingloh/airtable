@@ -30,7 +30,7 @@ public interface AirtableOperator {
      * @return left + ' operator ' + [right + ' operator ', ...others]
      */
     default String operator(String operator, AirtableFormula.Object left, AirtableFormula.Object right, AirtableFormula.Object... others) {
-        StringJoiner joiner = new StringJoiner(" " + operator + " ");
+        StringJoiner joiner = new StringJoiner(operator);
         joiner.add(left.toString());
         joiner.add(right.toString());
         for (Object other : others) {
