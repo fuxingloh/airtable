@@ -1,4 +1,4 @@
 rootProject.name = 'airtable'
 
 include 'api'
-include 'synchronize'
+//include 'synchronize'
