@@ -11,16 +11,16 @@ This library support all features available in https://airtable.com/api.
 * Build in pagination support
 * Heavily documented (javadoc)
 * Fluent Query Builder (inspired by AWS Java 2 conventions)
-* * AirtableFormula fluent builder
-* * AirtableTable.QuerySpec fluent builder
+  * AirtableFormula fluent builder
+  * AirtableTable.QuerySpec fluent builder
 * Lightweight
-* * commons-lang3
-* * fluent-hc
-* * jackson-databind
+  * commons-lang3
+  * fluent-hc
+  * jackson-databind
 * Proper airtable & client exception handling
-* * AirtableApiException (from api service: https://api.airtable.com) 
-* * AirtableClientException (from client: most likely your mistake)
-* * Status 429 Backoff 30 seconds auto try
+  * AirtableApiException (from api service: https://api.airtable.com) 
+  * AirtableClientException (from client: most likely your mistake)
+  * Status 429 Backoff 30 seconds auto try
 * Customizable HTTP Client (fluent-hc)
 
 # Example
