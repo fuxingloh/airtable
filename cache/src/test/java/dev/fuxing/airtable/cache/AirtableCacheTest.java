@@ -33,7 +33,6 @@ class AirtableCacheTest {
     @Test
     void get() {
         AirtableRecord record = cache.get("rec0W9eGVAFSy9Chb");
-
         assertNotNull(record);
     }
 

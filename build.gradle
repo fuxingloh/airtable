@@ -78,7 +78,7 @@ subprojects {
 
                     project {
                         name rootProject.name + '-' + project.name
-                        description project.description
+                        description 'Java Airtable API for https://airtable.com/api'
                         packaging 'jar'
                         url 'https://github.com/fuxingloh/airtable'
 
