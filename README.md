@@ -2,7 +2,7 @@
 
 This library support all features available in https://airtable.com/api. 
 
-**Latest Release:** 0.2.0
+**Latest Release:** 0.2.0<br>
 **License:** Apache 2.0<br>
 **JDK:** Java 8
 
