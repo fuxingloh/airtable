@@ -3,6 +3,8 @@
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel>
       <module name="airtable.main" target="1.8" />
+      <module name="airtable.mapper.main" target="1.8" />
+      <module name="airtable.mapper.test" target="1.8" />
       <module name="airtable.synchronize.main" target="1.8" />
       <module name="airtable.synchronize.test" target="1.8" />
       <module name="airtable.test" target="1.8" />

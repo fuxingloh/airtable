@@ -57,8 +57,9 @@ public final class AirtableExecutor {
                 .build();
 
         CONNECTION_MANAGER = new PoolingHttpClientConnectionManager(sfr);
-        CONNECTION_MANAGER.setMaxTotal(20);
-        CONNECTION_MANAGER.setDefaultMaxPerRoute(10);
+        // No point having too many, or else it will cause 429 error rather quickly
+        CONNECTION_MANAGER.setMaxTotal(8);
+        CONNECTION_MANAGER.setDefaultMaxPerRoute(8);
         CONNECTION_MANAGER.setValidateAfterInactivity(1000);
 
         REQUEST_CONFIG = RequestConfig.custom()
@@ -71,8 +72,28 @@ public final class AirtableExecutor {
                 .build();
     }
 
+    /**
+     * @return default Executor with 3 maximum retry before failing
+     */
     public static Executor newInstance() {
-        return Executor.newInstance(CLIENT)
+        return newInstance(true, 3);
+    }
+
+    /**
+     * @param autoRetry whether auto try is enabled
+     * @param maxRetry  maximum retry before failing
+     * @return Executor
+     */
+    public static Executor newInstance(boolean autoRetry, int maxRetry) {
+        HttpClientBuilder builder = HttpClientBuilder.create()
+                .setConnectionManager(CONNECTION_MANAGER)
+                .setDefaultRequestConfig(REQUEST_CONFIG);
+
+        if (autoRetry) {
+            builder.setServiceUnavailableRetryStrategy(new RetryStrategy(maxRetry));
+        }
+
+        return Executor.newInstance(builder.build())
                 .use(new CookieStore());
     }
 
@@ -112,8 +133,9 @@ public final class AirtableExecutor {
         public boolean retryRequest(HttpResponse response, int executionCount, HttpContext context) {
             int statusCode = response.getStatusLine().getStatusCode();
             if (statusCode == 429 && executionCount < maxCount) {
-                logger.info("429: Airtable Retry");
+                logger.info("429: Airtable Retry, Sleeping, Count: " + executionCount);
                 sleep();
+                logger.info("429: Airtable Retry, Resuming, Count: " + executionCount);
                 return true;
             }
 

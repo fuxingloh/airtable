@@ -2,6 +2,7 @@ package dev.fuxing.airtable.formula;
 
 import dev.fuxing.airtable.AirtableRecord;
 
+import java.math.BigDecimal;
 import java.util.function.Supplier;
 
 /**
@@ -42,6 +43,10 @@ public interface AirtableFormula {
 
         private Field(String name) {
             this.name = name;
+        }
+
+        public String getString(AirtableRecord record) {
+            return record.getFieldString(name);
         }
 
         @Override
@@ -95,7 +100,7 @@ public interface AirtableFormula {
          * @param name airtable field name
          * @return field name wrapped Object
          */
-        static Object field(String name) {
+        static Field field(String name) {
             return new Field(name);
         }
 
@@ -128,6 +133,14 @@ public interface AirtableFormula {
         }
 
         /**
+         * @param value BigDecimal value
+         * @return BigDecimal value wrapped Object
+         */
+        static Object value(BigDecimal value) {
+            return new Numeric(value);
+        }
+
+        /**
          * @param value float value
          * @return float value wrapped Object
          */
@@ -156,6 +169,14 @@ public interface AirtableFormula {
          * @return long value wrapped Object
          */
         static Object value(long value) {
+            return new Numeric(value);
+        }
+
+        /**
+         * @param value Number value
+         * @return Number value wrapped Object
+         */
+        static Object value(Number value) {
             return new Numeric(value);
         }
     }

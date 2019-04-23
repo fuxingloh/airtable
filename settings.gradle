@@ -1,4 +1,17 @@
 rootProject.name = 'airtable'
 
+/**
+ * The core Java API interface
+ */
 include 'api'
-//include 'synchronize'
+
+/**
+ * Cache for read only.
+ */
+include 'cache'
+
+/**
+ * Mirror for copying data from your own database to Airtable.
+ * Using Airtable as a stateless data view. 
+ */
+include 'mirror'
