@@ -36,6 +36,7 @@ public final class AirtableExecutor {
     final static PoolingHttpClientConnectionManager CONNECTION_MANAGER;
     final static RequestConfig REQUEST_CONFIG;
     final static HttpClient CLIENT;
+    final static Registry<ConnectionSocketFactory> SFR;
 
     static {
         LayeredConnectionSocketFactory ssl = null;
@@ -51,12 +52,12 @@ public final class AirtableExecutor {
             }
         }
 
-        final Registry<ConnectionSocketFactory> sfr = RegistryBuilder.<ConnectionSocketFactory>create()
+        SFR = RegistryBuilder.<ConnectionSocketFactory>create()
                 .register("http", PlainConnectionSocketFactory.getSocketFactory())
                 .register("https", ssl != null ? ssl : SSLConnectionSocketFactory.getSocketFactory())
                 .build();
 
-        CONNECTION_MANAGER = new PoolingHttpClientConnectionManager(sfr);
+        CONNECTION_MANAGER = new PoolingHttpClientConnectionManager(SFR);
         // No point having too many, or else it will cause 429 error rather quickly
         CONNECTION_MANAGER.setMaxTotal(8);
         CONNECTION_MANAGER.setDefaultMaxPerRoute(8);
@@ -92,6 +93,23 @@ public final class AirtableExecutor {
         if (autoRetry) {
             builder.setServiceUnavailableRetryStrategy(new RetryStrategy(maxRetry));
         }
+
+        return Executor.newInstance(builder.build())
+                .use(new CookieStore());
+    }
+
+    /**
+     * @return Executor with no retry, with 100 max conneciton pool
+     */
+    public static Executor newInstanceTurbo() {
+        PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager(SFR);
+        connectionManager.setMaxTotal(100);
+        connectionManager.setDefaultMaxPerRoute(100);
+        connectionManager.setValidateAfterInactivity(1000);
+
+        HttpClientBuilder builder = HttpClientBuilder.create()
+                .setConnectionManager(connectionManager)
+                .setDefaultRequestConfig(REQUEST_CONFIG);
 
         return Executor.newInstance(builder.build())
                 .use(new CookieStore());

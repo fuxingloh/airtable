@@ -52,7 +52,7 @@ public class AirtableApi {
      * Go to https://airtable.com/api to find the name of your app.
      *
      * @param app id of the app. (prefixed with 'app')
-     * @return AirtableApplication interface
+     * @return {@link AirtableApplication} interface
      * @see AirtableApi#app(String) 'base' is just a synonym for 'app'
      */
     public Application base(String app) {
@@ -63,7 +63,7 @@ public class AirtableApi {
      * Go to https://airtable.com/api to find the name of your app.
      *
      * @param app id of the app. (prefixed with 'app')
-     * @return AirtableApplication interface
+     * @return {@link AirtableApplication} interface
      */
     public Application app(String app) {
         return new Application(app);

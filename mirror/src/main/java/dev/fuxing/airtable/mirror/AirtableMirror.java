@@ -20,6 +20,10 @@ public abstract class AirtableMirror implements Runnable {
     private final AirtableTable table;
     private final AirtableFormula.Field field;
 
+    /**
+     * @param table AirtableTable interface
+     * @param field primary key field to track & de-dup
+     */
     public AirtableMirror(AirtableTable table, AirtableFormula.Field field) {
         this.table = table;
         this.field = field;
@@ -39,16 +43,15 @@ public abstract class AirtableMirror implements Runnable {
      * - Data that hasn't change will not be persisted again
      */
     protected void copy() {
-        records().forEachRemaining(provided -> {
-            AirtableFormula.Object value = value(field.getString(provided));
-
+        iterator().forEachRemaining(fromIterator -> {
             List<AirtableRecord> records = table.list(query -> {
+                AirtableFormula.Object value = value(field.getString(fromIterator));
                 query.filterByFormula(LogicalOperator.EQ, field, value);
             });
 
             // Create new Record entry if none existed
             if (records.isEmpty()) {
-                table.post(provided);
+                table.post(fromIterator);
                 return;
             }
 
@@ -58,14 +61,14 @@ public abstract class AirtableMirror implements Runnable {
             }
 
             // Skip if same
-            AirtableRecord record = records.get(0);
-            if (equals(provided, record)) {
+            AirtableRecord fromAirtable = records.get(0);
+            if (same(fromIterator, fromAirtable)) {
                 return;
             }
 
             // Patch into Airtable if different
-            provided.setId(record.getId());
-            table.patch(provided);
+            fromIterator.setId(fromAirtable.getId());
+            table.patch(fromIterator);
         });
     }
 
@@ -85,28 +88,28 @@ public abstract class AirtableMirror implements Runnable {
      * The iterator should contains all the records to be mirrored
      *
      * @return Iterator of AirtableRecord to copy into Airtable
-     * @see AirtableMirror#equals(AirtableRecord, AirtableRecord) will compare and check if persist is required
+     * @see AirtableMirror#same(AirtableRecord, AirtableRecord) will compare and check if persist is required
      * @see AirtableMirror#has(String) used to check if records still exists in the database
      */
-    protected abstract Iterator<AirtableRecord> records();
+    protected abstract Iterator<AirtableRecord> iterator();
 
     /**
-     * @param provided from service
-     * @param airtable from airtable
+     * @param fromIterator from your iterator
+     * @param fromAirtable from airtable
      * @return whether 2 records are the same, if same no persist will happen
      */
-    protected abstract boolean equals(AirtableRecord provided, AirtableRecord airtable);
-
-    /**
-     * @param value from airtable to check if already exist
-     * @return whether record still exist in main database, false = deleted
-     */
-    protected abstract boolean has(String value);
+    protected abstract boolean same(AirtableRecord fromIterator, AirtableRecord fromAirtable);
 
     /**
      * @return whether record still exist in main database, false = deleted
      */
-    protected boolean has(AirtableRecord record) {
-        return has(field.getString(record));
+    protected boolean has(AirtableRecord fromAirtable) {
+        return has(field.getString(fromAirtable));
     }
+
+    /**
+     * @param fieldValue from airtable to check if already exist
+     * @return whether record still exist in main database, false = deleted
+     */
+    protected abstract boolean has(String fieldValue);
 }

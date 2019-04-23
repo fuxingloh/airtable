@@ -1,3 +1,7 @@
 dependencies {
     compile project(':api')
+
+    // Guice for their Guava dependency. 
+    // Because I use their DI, I don't want to have conflicting guava versions.
+    compile group: 'com.google.inject', name: 'guice', version: '4.2.2'
 }

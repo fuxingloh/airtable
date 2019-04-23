@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import dev.fuxing.airtable.fields.AttachmentField;
 import dev.fuxing.airtable.fields.CollaboratorField;
 import dev.fuxing.airtable.formula.LogicalOperator;
-import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,23 +31,6 @@ class AirtableApiTest {
     static void beforeAll() {
         api = new AirtableApi(System.getenv("AIRTABLE_API_KEY"));
         table = api.app("app3h0gjxLX3Jomw8").table("Test Table");
-    }
-
-    @Test
-    @Ignore
-    void example() {
-        AirtableApi api = new AirtableApi("key...");
-        AirtableTable table = api.base("app...").table("Table Name");
-
-        List<AirtableRecord> list = table.list(querySpec -> {
-            querySpec.view("View Name");
-            querySpec.filterByFormula(LogicalOperator.EQ, field("Value"), value(1));
-        });
-
-        table.iterator().forEachRemaining(record -> {
-            List<AttachmentField> images = record.getFieldAttachmentList("Images");
-            String name = record.getFieldString("Name");
-        });
     }
 
     @BeforeEach
@@ -102,10 +84,6 @@ class AirtableApiTest {
         record.putField("Long Text", "L1\nL2");
         record.putField("Double", 123.4);
         record.putField("Integer", -111);
-
-        CollaboratorField collaborator = new CollaboratorField();
-        collaborator.setEmail("me@email.com");
-        record.putField("Collaborator", collaborator);
 
         AttachmentField attachment = new AttachmentField();
         attachment.setFilename("Optional.png");
