@@ -31,14 +31,14 @@ public class AirtableCacheGuava implements AirtableCache {
      * Use builder. This is a fallback for those that don't know how to use builder.
      * <p>
      * AirtableCacheGuava need to construct it's own AirtableTable interface because it need to control how 429 auto try works.
-     * Default max items is 1200 for get & query because that's the limit for the free Plan.
+     * Default max items is 1200 for get &#x26; query because that's the limit for the free Plan.
      *
      * @param apiKey Airtable ApiKey
      * @param base   id of the app. (prefixed with 'app')
      * @param table  table name of the table in Airtable
      */
     public AirtableCacheGuava(String apiKey, String base, String table) {
-        this((BuilderImpl) builder());
+        this((BuilderImpl) builder().apiKey(apiKey).base(base).table(table));
     }
 
     AirtableCacheGuava(BuilderImpl builder) {
@@ -103,7 +103,7 @@ public class AirtableCacheGuava implements AirtableCache {
 
     /**
      * <pre>
-     * create(builder -> builder
+     * create(builder -&#x3E; builder
      *      .apiKey("key...")
      *      .app("app...")
      *      .table("Table Name")

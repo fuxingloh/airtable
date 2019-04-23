@@ -22,7 +22,7 @@ public abstract class AirtableMirror implements Runnable {
 
     /**
      * @param table AirtableTable interface
-     * @param field primary key field to track & de-dup
+     * @param field primary key field to track &#x26; de-dup
      */
     public AirtableMirror(AirtableTable table, AirtableFormula.Field field) {
         this.table = table;
@@ -101,6 +101,7 @@ public abstract class AirtableMirror implements Runnable {
     protected abstract boolean same(AirtableRecord fromIterator, AirtableRecord fromAirtable);
 
     /**
+     * @param fromAirtable from airtable to check if already exist
      * @return whether record still exist in main database, false = deleted
      */
     protected boolean has(AirtableRecord fromAirtable) {

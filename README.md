@@ -2,7 +2,7 @@
 
 This library support all features available in https://airtable.com/api. 
 
-**Latest Release:** 0.1 (0.1 because https://api.airtable.com/v0)<br>
+**Latest Release:** 0.2.0
 **License:** Apache 2.0<br>
 **JDK:** Java 8
 
@@ -91,12 +91,12 @@ List<AirtableRecord> list = table.list(query -> {
 });
 
 ```
-#### Getting a existing record
+#### Getting an existing record
 ```java
 AirtableRecord record = table.get("rec...");
 ```
 
-#### Creating a new record
+#### Creating an new record
 ```java
 AirtableRecord record = new AirtableRecord();
 record.putField("Name", "Posted");
@@ -113,7 +113,7 @@ record.putFieldAttachments("Attachments", Collections.singletonList(field));
 record = table.post(record);
 ```
 
-#### Updating a existing record
+#### Updating an existing record
 ```java
 AirtableRecord record = new AirtableRecord();
 record.setId("rec...");
@@ -142,10 +142,10 @@ Hosted in Maven Central.
 <dependency>
   <groupId>dev.fuxing</groupId>
   <artifactId>airtable-api</artifactId>
-  <version>0.1</version>
+  <version>0.2.0</version>
 </dependency>
 ```
 ### Gradle
 ```
-compile group: 'dev.fuxing', name: 'airtable-api', version: '0.1'
+compile group: 'dev.fuxing', name: 'airtable-api', version: '0.2.0'
 ```
