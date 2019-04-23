@@ -113,7 +113,7 @@ List<AirtableRecord> list = table.list(query -> {
 AirtableRecord record = table.get("rec...");
 ```
 
-#### Creating an new record
+#### Creating a new record
 ```java
 AirtableRecord record = new AirtableRecord();
 record.putField("Name", "Posted");
@@ -139,7 +139,7 @@ record.putField("Name", "Patched");
 record = table.patch(record);
 ```
 
-#### Deleting a existing record
+#### Deleting an existing record
 ```java
 table.delete("rec...");
 ```
@@ -186,7 +186,7 @@ List<AirtableRecord> results = cache.query(querySpec -> {
 });
 ```
 
-#### Java
+#### Gradle Dependencies
 ```groovy
 compile group: 'dev.fuxing', name: 'airtable-api', version: '0.2.0'
 compile group: 'dev.fuxing', name: 'airtable-cache', version: '0.2.0'
@@ -252,7 +252,7 @@ ScheduledExecutorService ses = Executors.newSingleThreadScheduledExecutor();
 ses.scheduleAtFixedRate(mirror, 0, 6, TimeUnit.HOURS);
 ```
 
-#### Gradle
+#### Gradle Dependencies
 ```groovy
 compile group: 'dev.fuxing', name: 'airtable-api', version: '0.2.0'
 compile group: 'dev.fuxing', name: 'airtable-mirror', version: '0.2.0'
