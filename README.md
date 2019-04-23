@@ -23,6 +23,23 @@ This library support all features available in https://airtable.com/api.
   * `AirtableClientException` (from client: most likely your mistake)
   * Status 429 Backoff 30 seconds auto try
 * Customizable HTTP Client (fluent-hc)
+* Custom Module: Cache using Guava
+* Custom Module: Data Mirroring (e.g. ETL, Lake, MR)
+
+# Download
+Hosted in Maven Central.
+### Maven
+```xml
+<dependency>
+  <groupId>dev.fuxing</groupId>
+  <artifactId>airtable-api</artifactId>
+  <version>0.2.0</version>
+</dependency>
+```
+### Gradle
+```groovy
+compile group: 'dev.fuxing', name: 'airtable-api', version: '0.2.0'
+```
 
 # Example
 #### Getting the AirtableTable interface.
@@ -134,18 +151,109 @@ Executor executor = AirtableExecutor.newInstance(false);
 AirtableApi api = new AirtableApi("key...", executor);
 AirtableTable table = api.base("app...").table("Table Name");
 ```
+# Cache Module
+> Use Airtable as your main database with heavy caching strategy. 
 
-# Download
-Hosted in Maven Central.
-### Maven
-```xml
-<dependency>
-  <groupId>dev.fuxing</groupId>
-  <artifactId>airtable-api</artifactId>
-  <version>0.2.0</version>
-</dependency>
+For many read heavy applicaiton, status 429; too many request can be problematic when developing for speed. Cache is a read-only interface that will ignore ignorable `AirtableApiException` (429, 500, 502, 503).  
+
+#### Creating an airtable cache.
+AirtableCache uses a different HTTPClient with more concurent connection pool. RetryStrategy is also ignored.
+```java
+AirtableCache cache = AirtableCache.create(builder -> builder
+        .apiKey(System.getenv("AIRTABLE_API_KEY"))
+        .app("app3h0gjxLX3Jomw8")
+        .table("Test Table")
+        // Optional cache control
+        .withGet(maxRecords, cacheDuration, cacheTimeUnit)
+        .withQuery(maxRecords, cacheDuration, cacheTimeUnit)
+);
 ```
-### Gradle
+
+#### Get record by id
+Get will always attempt to get the latest record from airtable server.<br>
+Fallback read from cache will only happen if any of the ignorable exception is thrown.
+```java
+AirtableRecord record = cache.get("rec0W9eGVAFSy9Chb");
 ```
+
+#### Get records results by query spec
+Query will always attempt to get the latest result from airtable server.<br>
+Fallback read from cache will only happen if any of the ignorable exception is thrown.<br>
+The cache key used will be the querystring.
+```java
+List<AirtableRecord> results = cache.query(querySpec -> {
+    querySpec.filterByFormula(LogicalOperator.EQ, field("Name"), value("Name 1"));
+});
+```
+
+#### Java
+```groovy
 compile group: 'dev.fuxing', name: 'airtable-api', version: '0.2.0'
+compile group: 'dev.fuxing', name: 'airtable-cache', version: '0.2.0'
+```
+# Mirror Module
+> Use Airtable as your stateless database view. 
+
+For many applications:
+* You need a quick and dirty way to look at data from your database. 
+* Your product manager don't know how to use SQL. 
+* You don't want to manually create scripts and generate them. 
+* You like Airtable and how simple it is. 
+* You want to use Airtable blocks generate Analytic.
+* You want visibility of internal data.
+* You are irriated by all the requests your pm requires. (sort by?, you want me to filter WHAT?, why can't you learn how to use group by!)
+
+#### Implementation
+```java
+// Example Database
+Database database = new Database();
+
+AirtableMirror mirror = new AirtableMirror(table, field("PrimaryKey in Airtable")) {
+    @Override
+    protected Iterator<AirtableRecord> iterator() {
+        // Provide an iterator of all your records to mirror over to Airtable.
+        Iterator<Database.Data> iterator = database.iterator();
+
+        return new Iterator<AirtableRecord>() {
+            @Override
+            public boolean hasNext() {
+                return iterator.hasNext();
+            }
+
+            @Override
+            public AirtableRecord next() {
+                Database.Data data = iterator.next();
+
+                // Map into AirtableRecord
+                AirtableRecord record = new AirtableRecord();
+                record.putField("Name", data.name);
+                record.putField("Checkbox", data.checkbox);
+                ...
+                return record;
+            }
+        };
+    }
+
+    // Whether a record from your (the iterator) is still same from airtable.
+    protected boolean same(AirtableRecord fromIterator, AirtableRecord fromAirtable) {
+        // You might want to add a timestamp to simplify checking
+        String left = fromIterator.getFieldString("Name");
+        String right = fromAirtable.getFieldString("Name");
+        return Objects.equals(left, right);
+    }
+
+    // Whether a row in airtable still exists in your database
+    protected boolean has(String fieldValue) {
+        return database.get(fieldValue) != null;
+    }
+};
+// Async run it every 6 hours.
+ScheduledExecutorService ses = Executors.newSingleThreadScheduledExecutor();
+ses.scheduleAtFixedRate(mirror, 0, 6, TimeUnit.HOURS);
+```
+
+#### Gradle
+```groovy
+compile group: 'dev.fuxing', name: 'airtable-api', version: '0.2.0'
+compile group: 'dev.fuxing', name: 'airtable-mirror', version: '0.2.0'
 ```
