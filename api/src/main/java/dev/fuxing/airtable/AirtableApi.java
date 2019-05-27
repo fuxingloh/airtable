@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import dev.fuxing.airtable.exceptions.AirtableApiException;
 import dev.fuxing.airtable.exceptions.AirtableClientException;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.client.fluent.Executor;
@@ -330,7 +331,7 @@ public class AirtableApi {
 
         @Override
         public AirtableTable.QuerySpec sort(String field, @Nullable String direction) {
-            sort.put(field, direction);
+            sort.put(field, StringUtils.lowerCase(direction));
             return this;
         }
 
