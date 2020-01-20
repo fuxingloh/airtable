@@ -31,7 +31,7 @@ public class AirtableList extends ArrayList<AirtableRecord> implements AirtableT
         return offset;
     }
 
-    private static List<AirtableRecord> parse(JsonNode node) {
+    public static List<AirtableRecord> parse(JsonNode node) {
         if (node.isMissingNode()) return Collections.emptyList();
 
         List<AirtableRecord> records = new ArrayList<>();

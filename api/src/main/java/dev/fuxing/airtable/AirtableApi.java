@@ -3,6 +3,7 @@ package dev.fuxing.airtable;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import dev.fuxing.airtable.exceptions.AirtableApiException;
 import dev.fuxing.airtable.exceptions.AirtableClientException;
@@ -18,6 +19,7 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -158,6 +160,42 @@ public class AirtableApi {
             }
         }
 
+        @Override
+        public List<AirtableRecord> patch(List<AirtableRecord> records, boolean typecast) {
+            AirtableClientException.assert10Records(records);
+
+            try {
+                Request request = Request.Patch(createUri())
+                        .addHeader("Authorization", "Bearer " + apiKey)
+                        .bodyString(toString(records, typecast), ContentType.APPLICATION_JSON);
+
+                JsonNode node = executor.execute(request)
+                        .handleResponse(AirtableApi.this::handleResponse);
+
+                return AirtableList.parse(node.path("records"));
+            } catch (IOException e) {
+                throw new AirtableClientException(e);
+            }
+        }
+
+        @Override
+        public List<AirtableRecord> put(List<AirtableRecord> records, boolean typecast) {
+            AirtableClientException.assert10Records(records);
+
+            try {
+                Request request = Request.Put(createUri())
+                        .addHeader("Authorization", "Bearer " + apiKey)
+                        .bodyString(toString(records, typecast), ContentType.APPLICATION_JSON);
+
+                JsonNode node = executor.execute(request)
+                        .handleResponse(AirtableApi.this::handleResponse);
+
+                return AirtableList.parse(node.path("records"));
+            } catch (IOException e) {
+                throw new AirtableClientException(e);
+            }
+        }
+
         @Nullable
         @Override
         public AirtableRecord get(String recordId) {
@@ -175,6 +213,25 @@ public class AirtableApi {
                 // For Get Request, status 404 is resolved into null
                 if (e.getCode() == 404) return null;
                 throw e;
+            }
+        }
+
+        @Override
+        public List<AirtableRecord> post(List<AirtableRecord> records, boolean typecast) {
+            AirtableClientException.assert10Records(records);
+
+
+            try {
+                Request request = Request.Post(createUri())
+                        .addHeader("Authorization", "Bearer " + apiKey)
+                        .bodyString(toString(records, typecast), ContentType.APPLICATION_JSON);
+
+                JsonNode node = executor.execute(request)
+                        .handleResponse(AirtableApi.this::handleResponse);
+
+                return AirtableList.parse(node.path("records"));
+            } catch (IOException e) {
+                throw new AirtableClientException(e);
             }
         }
 
@@ -209,6 +266,39 @@ public class AirtableApi {
             }
         }
 
+        @Override
+        public List<String> delete(List<String> recordIds) {
+            AirtableClientException.assert10Records(recordIds);
+
+            try {
+                URIBuilder uriBuilder = new URIBuilder()
+                        .setScheme("https")
+                        .setHost("api.airtable.com")
+                        .setPathSegments("v0", base, table);
+
+                recordIds.forEach(s -> {
+                    uriBuilder.addParameter("records[]", s);
+                });
+
+                Request request = Request.Delete(uriBuilder.build())
+                        .addHeader("Authorization", "Bearer " + apiKey);
+
+
+                JsonNode node = executor.execute(request)
+                        .handleResponse(AirtableApi.this::handleResponse);
+
+                List<String> ids = new ArrayList<>();
+                for (JsonNode jsonNode : node.path("records")) {
+                    if (jsonNode.path("deleted").asBoolean()) {
+                        ids.add(jsonNode.path("id").asText());
+                    }
+                }
+                return ids;
+            } catch (IOException | URISyntaxException e) {
+                throw new AirtableClientException(e);
+            }
+        }
+
         /**
          * @param record to convert to json string
          * @return json string
@@ -221,6 +311,36 @@ public class AirtableApi {
 
             ObjectNode fields = node.putObject("fields");
             record.getFields().forEach(fields::set);
+            try {
+                return OBJECT_MAPPER.writeValueAsString(node);
+            } catch (JsonProcessingException e) {
+                throw new AirtableClientException(e);
+            }
+        }
+
+        /**
+         * @param records to convert into json string
+         * @return json string
+         */
+        private String toString(List<AirtableRecord> records, boolean typecast) {
+            ObjectNode node = OBJECT_MAPPER.createObjectNode();
+            if (typecast) {
+                node.put("typecast", typecast);
+            }
+
+            ArrayNode arrayNode = node.putArray("records");
+            for (AirtableRecord record : records) {
+                ObjectNode recordNode = OBJECT_MAPPER.createObjectNode();
+                if (record.getId() != null) {
+                    recordNode.put("id", record.getId());
+                }
+
+                ObjectNode fields = recordNode.putObject("fields");
+                record.getFields().forEach(fields::set);
+
+                arrayNode.add(recordNode);
+            }
+
             try {
                 return OBJECT_MAPPER.writeValueAsString(node);
             } catch (JsonProcessingException e) {

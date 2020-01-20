@@ -57,6 +57,10 @@ class AirtableApiTest {
         assertEquals(42.9, record.getFieldDouble("Double"));
         assertEquals(-42, record.getFieldInteger("Integer"));
 
+        assertEquals(-42, record.getFieldLong("Integer"));
+        assertNotNull(record.getCreatedTime());
+        assertNotNull(record.toString());
+
         // Attachments
         List<AttachmentField> attachments = record.getFieldAttachmentList("Attachments");
         assertNotNull(attachments);

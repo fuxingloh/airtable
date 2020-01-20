@@ -2,22 +2,24 @@
 
 This library support all features available in https://airtable.com/api. 
 
-**Latest Release:** 0.2.0<br>
+**Latest Release:** 0.3.0<br>
 **License:** Apache 2.0<br>
-**JDK:** Java 8
+**JDK:** Java 8<br>
+**Code Coverage:** 71% 
 
 # Features:
+* Supports the new batch API 
 * Supports all fields
-* Supports all features exposed in https://airtable.com/api (as of 2019/04/21)
+* Supports all features exposed in https://airtable.com/api (as of 2020/01/20)
 * Build in pagination support
 * Heavily documented (javadoc)
 * Fluent Query Builder (inspired by AWS Java 2 conventions)
   * `AirtableFormula` fluent builder
   * `AirtableTable.QuerySpec` fluent builder
 * Lightweight
-  * commons-lang3
-  * fluent-hc
-  * jackson-databind
+  * `commons-lang3` mainly for FastDateFormat, java 8 version is non thread-safe
+  * `fluent-hc` to perform REST call
+  * `jackson-databind` for handling JSON data
 * Proper airtable & client exception handling
   * `AirtableApiException` (from api service: https://api.airtable.com) 
   * `AirtableClientException` (from client: most likely your mistake)
@@ -33,12 +35,12 @@ Hosted in Maven Central.
 <dependency>
   <groupId>dev.fuxing</groupId>
   <artifactId>airtable-api</artifactId>
-  <version>0.2.0</version>
+  <version>0.3.0</version>
 </dependency>
 ```
 ### Gradle
 ```groovy
-compile group: 'dev.fuxing', name: 'airtable-api', version: '0.2.0'
+compile group: 'dev.fuxing', name: 'airtable-api', version: '0.3.0'
 ```
 
 # Example
@@ -188,20 +190,20 @@ List<AirtableRecord> results = cache.query(querySpec -> {
 
 #### Gradle Dependencies
 ```groovy
-compile group: 'dev.fuxing', name: 'airtable-api', version: '0.2.0'
-compile group: 'dev.fuxing', name: 'airtable-cache', version: '0.2.0'
+compile group: 'dev.fuxing', name: 'airtable-api', version: '0.3.0'
+compile group: 'dev.fuxing', name: 'airtable-cache', version: '0.3.0'
 ```
 # Mirror Module
-> Use Airtable as your stateless database view. 
+> Use Airtable as your stateless database view for EDA.
 
 For many applications:
 * You need a quick and dirty way to look at data from your database. 
 * Your product manager don't know how to use SQL. 
 * You don't want to manually create scripts and generate them. 
 * You like Airtable and how simple it is. 
-* You want to use Airtable blocks generate Analytic.
+* You want to use Airtable blocks to generate Analytic.
 * You want visibility of internal data.
-* You are irriated by all the requests your pm requires. (sort by?, you want me to filter WHAT?, why can't you learn how to use group by!)
+* You are irritated from the requests your pm requires. (sort by?, you want me to filter WHAT?, why can't you learn how to use group by!)
 
 #### Implementation
 ```java
@@ -254,6 +256,6 @@ ses.scheduleAtFixedRate(mirror, 0, 6, TimeUnit.HOURS);
 
 #### Gradle Dependencies
 ```groovy
-compile group: 'dev.fuxing', name: 'airtable-api', version: '0.2.0'
-compile group: 'dev.fuxing', name: 'airtable-mirror', version: '0.2.0'
+compile group: 'dev.fuxing', name: 'airtable-api', version: '0.3.0'
+compile group: 'dev.fuxing', name: 'airtable-mirror', version: '0.3.0'
 ```

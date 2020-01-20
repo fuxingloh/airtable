@@ -12,6 +12,6 @@ include 'cache'
 
 /**
  * Mirror for copying data from your own database to Airtable.
- * Using Airtable as a stateless data view. 
+ * Using Airtable as a stateless data view for EDA.
  */
 include 'mirror'

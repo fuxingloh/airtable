@@ -15,7 +15,7 @@ subprojects {
     apply plugin: 'maven'
 
     group 'dev.fuxing'
-    version '0.2.0'
+    version '0.3.0'
 
     ext.jUnitVersion = '5.4.2'
     ext.guiceVersion = '4.2.2'
@@ -100,7 +100,7 @@ subprojects {
                             developer {
                                 id = 'fuxing'
                                 name = 'Fuxing Loh'
-                                email = 'fuxing@fuxing.dev'
+                                email = 'maven@fuxing.dev'
                             }
                         }
                     }

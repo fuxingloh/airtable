@@ -7,10 +7,7 @@ import dev.fuxing.airtable.formula.AirtableOperator;
 import javax.annotation.Nullable;
 import java.net.URI;
 import java.time.ZoneId;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.function.Consumer;
 
 /**
@@ -134,6 +131,62 @@ public interface AirtableTable {
     AirtableRecord get(String recordId);
 
     /**
+     * To create new records, issue a POST request to the Records endpoint.
+     * <p>
+     * Your request body should include an array of up to 10 record objects.
+     * Each of these objects should have one key, fields, which contains all of your record's cell values by field name.
+     * You can include all, some, or none of the field values.
+     * <p>
+     * Returns an array of record objects created if the call succeeded, including record IDs which will uniquely identify the records within Test Base.
+     * <p>
+     * To create new attachments in Attachments, set the field value to an array of attachment objects.
+     * When creating an attachment, url is required, and filename is optional.
+     * Airtable will download the file at the given url and keep its own copy of it.
+     * All other attachment object properties will be generated server-side soon afterward.
+     * <p>
+     * To set a collaborator in Collaborator, set the field value to a user object.
+     * A user object must contain either an id or an email that uniquely identifies a user who this base is shared with.
+     * An id takes precedence over email if both are present.
+     * Any missing properties will be filled in automatically based on the matching user.
+     * <p>
+     * TYPECAST is disabled.
+     *
+     * @param records list of up to 10 records to create
+     * @return array of record objects created
+     * @since 0.3.0, airtable.com/api added batch request
+     */
+    default List<AirtableRecord> post(List<AirtableRecord> records) {
+        return post(records, false);
+    }
+
+    /**
+     * To create new records, issue a POST request to the Records endpoint.
+     * <p>
+     * Your request body should include an array of up to 10 record objects.
+     * Each of these objects should have one key, fields, which contains all of your record's cell values by field name.
+     * You can include all, some, or none of the field values.
+     * <p>
+     * Returns an array of record objects created if the call succeeded, including record IDs which will uniquely identify the records within Test Base.
+     * <p>
+     * To create new attachments in Attachments, set the field value to an array of attachment objects.
+     * When creating an attachment, url is required, and filename is optional.
+     * Airtable will download the file at the given url and keep its own copy of it.
+     * All other attachment object properties will be generated server-side soon afterward.
+     * <p>
+     * To set a collaborator in Collaborator, set the field value to a user object.
+     * A user object must contain either an id or an email that uniquely identifies a user who this base is shared with.
+     * An id takes precedence over email if both are present.
+     * Any missing properties will be filled in automatically based on the matching user.
+     *
+     * @param records  list of up to 10 records to create
+     * @param typecast The Airtable API will perform best-effort automatic data conversion from string values if the typecast parameter is passed in.
+     *                 Automatic conversion is disabled by default to ensure data integrity, but it may be helpful for integrating with 3rd party data sources.
+     * @return array of record objects created
+     * @since 0.3.0, airtable.com/api added batch request
+     */
+    List<AirtableRecord> post(List<AirtableRecord> records, boolean typecast);
+
+    /**
      * To create a new record, issue a POST request to the Records endpoint.
      * <p>
      * You can include all, some, or none of the field values.
@@ -198,6 +251,88 @@ public interface AirtableTable {
      * <p>
      * Values for Computed values are automatically computed by Airtable and cannot be directly created.
      *
+     * @param records list of up to 10 records to patch
+     * @return list of patched records
+     * @since 0.3.0, airtable.com/api added batch request
+     */
+    default List<AirtableRecord> patch(List<AirtableRecord> records) {
+        return patch(records, false);
+    }
+
+    /**
+     * To update some (but not all) fields of records, issue a PATCH request to the record endpoint.
+     * Any fields that are not included will not be updated.
+     * <p>
+     * To add attachments, add new attachment objects to the existing array.
+     * Be sure to include all existing attachment objects that you wish to retain.
+     * For the new attachments being added, url is required, and filename is optional.
+     * To remove attachments, include the existing array of attachment objects, excluding any that you wish to remove.
+     * <p>
+     * To set a collaborator, set the field value to a user object.
+     * A user object must contain either an id or an email that uniquely identifies a user who this base is shared with.
+     * An id takes precedence over email if both are present.
+     * Any missing properties will be filled in automatically based on the matching user.
+     * <p>
+     * Values for Computed values are automatically computed by Airtable and cannot be directly created.
+     *
+     * @param records  list of up to 10 records to patch
+     * @param typecast The Airtable API will perform best-effort automatic data conversion from string values if the typecast parameter is passed in.
+     *                 Automatic conversion is disabled by default to ensure data integrity, but it may be helpful for integrating with 3rd party data sources.
+     * @return list of patched records
+     * @since 0.3.0, airtable.com/api added batch request
+     */
+    List<AirtableRecord> patch(List<AirtableRecord> records, boolean typecast);
+
+    /**
+     * A PUT request will perform a destructive update and clear all unspecified cell values.
+     * <p>
+     * To add attachments, add new attachment objects to the existing array.
+     * Be sure to include all existing attachment objects that you wish to retain.
+     * For the new attachments being added, url is required, and filename is optional.
+     * To remove attachments, include the existing array of attachment objects, excluding any that you wish to remove.
+     * <p>
+     * To set a collaborator, set the field value to a user object.
+     * A user object must contain either an id or an email that uniquely identifies a user who this base is shared with.
+     * An id takes precedence over email if both are present.
+     * Any missing properties will be filled in automatically based on the matching user.
+     * <p>
+     * Values for Computed values are automatically computed by Airtable and cannot be directly created.
+     *
+     * @param records list of up to 10 records to put
+     * @return list of updated records
+     * @since 0.3.0, airtable.com/api added batch request
+     */
+    default List<AirtableRecord> put(List<AirtableRecord> records) {
+        return put(records, false);
+    }
+
+    /**
+     * A PUT request will perform a destructive update and clear all unspecified cell values.
+     *
+     * @param records  list of up to 10 records to put
+     * @param typecast The Airtable API will perform best-effort automatic data conversion from string values if the typecast parameter is passed in.
+     *                 Automatic conversion is disabled by default to ensure data integrity, but it may be helpful for integrating with 3rd party data sources.
+     * @return list of updated records
+     * @since 0.3.0, airtable.com/api added batch request
+     */
+    List<AirtableRecord> put(List<AirtableRecord> records, boolean typecast);
+
+    /**
+     * To update some (but not all) fields of records, issue a PATCH request to the record endpoint.
+     * Any fields that are not included will not be updated.
+     * <p>
+     * To add attachments, add new attachment objects to the existing array.
+     * Be sure to include all existing attachment objects that you wish to retain.
+     * For the new attachments being added, url is required, and filename is optional.
+     * To remove attachments, include the existing array of attachment objects, excluding any that you wish to remove.
+     * <p>
+     * To set a collaborator, set the field value to a user object.
+     * A user object must contain either an id or an email that uniquely identifies a user who this base is shared with.
+     * An id takes precedence over email if both are present.
+     * Any missing properties will be filled in automatically based on the matching user.
+     * <p>
+     * Values for Computed values are automatically computed by Airtable and cannot be directly created.
+     *
      * @param record to patch
      * @return Patched Record
      */
@@ -235,6 +370,15 @@ public interface AirtableTable {
      * @return whether record has been deleted.
      */
     boolean delete(String recordId);
+
+    /**
+     * To delete a record from Table, issue a DELETE request to the record endpoint.
+     *
+     * @param recordIds list of up to 10 record IDs to delete.
+     * @return list of records id that is deleted: true
+     * 0.3.0, airtable.com/api added batch request
+     */
+    List<String> delete(List<String> recordIds);
 
     /**
      * A fluent interface for querying records in Airtable/Application/Table.
