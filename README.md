@@ -133,13 +133,22 @@ record.putFieldAttachments("Attachments", Collections.singletonList(field));
 record = table.post(record);
 ```
 
-#### Updating an existing record
+#### Patching an existing record
 ```java
 AirtableRecord record = new AirtableRecord();
 record.setId("rec...");
 record.putField("Name", "Patched");
 
 record = table.patch(record);
+```
+
+#### Replacing an existing record
+```java
+AirtableRecord record = new AirtableRecord();
+record.setId("rec...");
+record.putField("Name", "Replaced Entirely");
+
+record = table.put(record);
 ```
 
 #### Deleting an existing record
