@@ -13,7 +13,7 @@ This library support all features available in https://airtable.com/api.
 * Supports all features exposed in https://airtable.com/api (as of 2020/01/20)
 * Build in pagination support
 * Heavily documented (javadoc)
-* Fluent Query Builder (inspired by AWS Java 2 conventions)
+* Fluent Query Builder for type safe query building
   * `AirtableFormula` fluent builder
   * `AirtableTable.QuerySpec` fluent builder
 * Lightweight
@@ -99,6 +99,7 @@ List<AirtableRecord> list = table.list(query -> {
     // Vanilla String Formula: NOT({F} = '')
     query.filterByFormula("NOT({F} = '')");
     
+    // Compile time Typesafe Query Formula
     // {Value}=1
     query.filterByFormula(LogicalOperator.EQ, AirtableFormula.Object.field("Value"), value(1));
     
@@ -132,13 +133,22 @@ record.putFieldAttachments("Attachments", Collections.singletonList(field));
 record = table.post(record);
 ```
 
-#### Updating an existing record
+#### Patching an existing record
 ```java
 AirtableRecord record = new AirtableRecord();
 record.setId("rec...");
 record.putField("Name", "Patched");
 
 record = table.patch(record);
+```
+
+#### Replacing an existing record
+```java
+AirtableRecord record = new AirtableRecord();
+record.setId("rec...");
+record.putField("Name", "Replaced Entirely");
+
+record = table.put(record);
 ```
 
 #### Deleting an existing record
