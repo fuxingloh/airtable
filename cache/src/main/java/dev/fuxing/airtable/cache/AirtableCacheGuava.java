@@ -179,7 +179,7 @@ public class AirtableCacheGuava implements AirtableCache {
      * I saw somewhere someone used a fluent Step builder for force a configuration.
      * I thought it's quite cool I wanted to give it a shot for this module.
      */
-    interface Builder {
+    public interface Builder {
         interface StepKey {
 
             /**

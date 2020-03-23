@@ -15,7 +15,7 @@ subprojects {
     apply plugin: 'maven'
 
     group 'dev.fuxing'
-    version '0.3.0'
+    version '0.3.1'
 
     ext.jUnitVersion = '5.4.2'
     ext.guiceVersion = '4.2.2'
