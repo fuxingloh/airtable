@@ -2,7 +2,7 @@
 
 This library support all features available in https://airtable.com/api. 
 
-**Latest Release:** 0.3.0<br>
+**Latest Release:** 0.3.1<br>
 **License:** Apache 2.0<br>
 **JDK:** Java 8<br>
 **Code Coverage:** 71% 
@@ -35,12 +35,12 @@ Hosted in Maven Central.
 <dependency>
   <groupId>dev.fuxing</groupId>
   <artifactId>airtable-api</artifactId>
-  <version>0.3.0</version>
+  <version>0.3.1</version>
 </dependency>
 ```
 ### Gradle
 ```groovy
-compile group: 'dev.fuxing', name: 'airtable-api', version: '0.3.0'
+compile group: 'dev.fuxing', name: 'airtable-api', version: '0.3.1'
 ```
 
 # Example
@@ -200,8 +200,8 @@ List<AirtableRecord> results = cache.query(querySpec -> {
 
 #### Gradle Dependencies
 ```groovy
-compile group: 'dev.fuxing', name: 'airtable-api', version: '0.3.0'
-compile group: 'dev.fuxing', name: 'airtable-cache', version: '0.3.0'
+compile group: 'dev.fuxing', name: 'airtable-api', version: '0.3.1'
+compile group: 'dev.fuxing', name: 'airtable-cache', version: '0.3.1'
 ```
 # Mirror Module
 > Use Airtable as your stateless database view for EDA.
@@ -266,6 +266,6 @@ ses.scheduleAtFixedRate(mirror, 0, 6, TimeUnit.HOURS);
 
 #### Gradle Dependencies
 ```groovy
-compile group: 'dev.fuxing', name: 'airtable-api', version: '0.3.0'
-compile group: 'dev.fuxing', name: 'airtable-mirror', version: '0.3.0'
+compile group: 'dev.fuxing', name: 'airtable-api', version: '0.3.1'
+compile group: 'dev.fuxing', name: 'airtable-mirror', version: '0.3.1'
 ```
