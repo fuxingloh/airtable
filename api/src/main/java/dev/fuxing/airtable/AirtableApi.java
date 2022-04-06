@@ -426,7 +426,7 @@ public class AirtableApi {
         @Override
         public AirtableTable.QuerySpec fields(List<String> fields) {
             for (int i = 0; i < fields.size(); i++) {
-                builder.setParameter("fields[" + i + "]", fields.get(i));
+                builder.setParameter("fields[]", fields.get(i));
             }
             return this;
         }
