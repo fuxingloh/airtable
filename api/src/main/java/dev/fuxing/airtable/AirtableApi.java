@@ -79,7 +79,7 @@ public class AirtableApi {
      *
      * @see AirtableApplication inteface for all available methods.
      */
-    public final class Application implements AirtableApplication {
+    public class Application implements AirtableApplication {
         private final String base;
 
         private Application(String base) {
@@ -100,7 +100,7 @@ public class AirtableApi {
      *
      * @see AirtableTable interface for all available methods.
      */
-    public final class Table implements AirtableTable {
+    public class Table implements AirtableTable {
         private final String base;
         private final String table;
 
@@ -276,9 +276,7 @@ public class AirtableApi {
                         .setHost("api.airtable.com")
                         .setPathSegments("v0", base, table);
 
-                recordIds.forEach(s -> {
-                    uriBuilder.addParameter("records[]", s);
-                });
+                recordIds.forEach(s -> uriBuilder.addParameter("records[]", s));
 
                 Request request = Request.Delete(uriBuilder.build())
                         .addHeader("Authorization", "Bearer " + apiKey);
@@ -426,7 +424,7 @@ public class AirtableApi {
         @Override
         public AirtableTable.QuerySpec fields(List<String> fields) {
             for (int i = 0; i < fields.size(); i++) {
-                builder.setParameter("fields[]", fields.get(i));
+                builder.addParameter("fields[]", fields.get(i));
             }
             return this;
         }
