@@ -150,8 +150,8 @@ class AirtableApiQueryTest {
         // Filter By Formula, separated into another method
 
         // Fields
-        assertEquals(query -> query.fields("a", "b"), "fields%5B0%5D=a&fields%5B1%5D=b");
-        assertEquals(query -> query.fields(Collections.singletonList("Space Word")), "fields%5B0%5D=Space+Word");
+        assertEquals(query -> query.fields("a", "b"), "fields%5B%5D=a&fields%5B%5D=b");
+        assertEquals(query -> query.fields(Collections.singletonList("Space Word")), "fields%5B%5D=Space+Word");
 
         // Offset
         assertEquals(query -> query.offset("recidexample"), "offset=recidexample");

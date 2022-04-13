@@ -178,7 +178,7 @@ public class AirtableRecord {
      * @param value to be mapped into JsonNode
      */
     public void putField(String name, Object value) {
-        putField(name, OBJECT_MAPPER.valueToTree(value));
+        putField(name, (JsonNode) OBJECT_MAPPER.valueToTree(value));
     }
 
     /**
