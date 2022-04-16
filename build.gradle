@@ -13,6 +13,7 @@ subprojects {
     apply plugin: 'java'
     apply plugin: 'signing'
     apply plugin: 'maven'
+    apply plugin: 'jacoco'
 
     group 'dev.fuxing'
     version '0.3.1'
@@ -106,6 +107,13 @@ subprojects {
                     }
                 }
             }
+        }
+    }
+
+    jacocoTestReport {
+        reports {
+            xml.enabled true
+            html.enabled false
         }
     }
 }
