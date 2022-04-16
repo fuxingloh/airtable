@@ -13,6 +13,7 @@ subprojects {
     apply plugin: 'java'
     apply plugin: 'signing'
     apply plugin: 'maven'
+    apply plugin: 'jacoco'
 
     group 'dev.fuxing'
     version '0.3.1'
@@ -42,6 +43,15 @@ subprojects {
 
     test {
         useJUnitPlatform()
+        finalizedBy jacocoTestReport
+    }
+
+    jacocoTestReport {
+        reports {
+            xml.enabled true
+            html.enabled false
+        }
+        dependsOn test
     }
 
     task javadocJar(type: Jar) {
@@ -71,7 +81,7 @@ subprojects {
                 beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
                 // Target repository
                 repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                    authentication(userName: ossrhUser, password: ossrhPassword)
+                    authentication(userName: System.getenv('NEXUS_USERNAME'), password: System.getenv('NEXUS_PASSWORD'))
                 }
                 pom {
                     artifactId = rootProject.name + '-' + project.name
@@ -111,6 +121,6 @@ subprojects {
 }
 
 nexusStaging {
-    username = ossrhUser
-    password = ossrhPassword
+    username = System.getenv('NEXUS_USERNAME')
+    password = System.getenv('NEXUS_PASSWORD')
 }

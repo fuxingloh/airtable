@@ -269,3 +269,7 @@ ses.scheduleAtFixedRate(mirror, 0, 6, TimeUnit.HOURS);
 compile group: 'dev.fuxing', name: 'airtable-api', version: '0.3.1'
 compile group: 'dev.fuxing', name: 'airtable-mirror', version: '0.3.1'
 ```
+
+# Testing
+
+> https://airtable.com/shrTMCxjhQIF2ZJDe
