@@ -271,4 +271,11 @@ compile group: 'dev.fuxing', name: 'airtable-mirror', version: '0.3.2'
 
 # Testing
 
-https://airtable.com/shrTMCxjhQIF2ZJDe is used to run test against a real instance.
+https://airtable.com/shrTMCxjhQIF2ZJDe is used to run test against a real instance
+# Publishing
+
+- `./gradlew uploadArchives closeAndPromoteRepository`
+- Requires `NEXUS_USERNAME` & `NEXUS_PASSWORD` & PGP key.
+
+> Since PGP key is required, and it's my key that I rather it not being stored on a server. I will be publishing
+> manually instead.

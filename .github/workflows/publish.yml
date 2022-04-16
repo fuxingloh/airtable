@@ -6,7 +6,8 @@ on:
 
 
 jobs:
-  Test:
+  main:
+    name: "Maven Central"
     runs-on: ubuntu-latest
     environment: Maven Central Publishing
     steps:
