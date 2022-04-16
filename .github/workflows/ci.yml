@@ -24,6 +24,8 @@ jobs:
 
       - name: Gradle check
         run: ./gradlew check
+        env:
+          AIRTABLE_API_KEY: ${{ secrets.AIRTABLE_API_KEY }}
 
       - name: Gradle coverage
         run: ./gradlew codeCoverageReport
