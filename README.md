@@ -2,12 +2,7 @@
 
 This library support all features available in https://airtable.com/api. 
 
-**Latest Release:** 0.3.1<br>
-**License:** Apache 2.0<br>
-**JDK:** Java 8<br>
-**Code Coverage:** 71% 
-
-[![CI](https://github.com/fuxingloh/airtable/actions/workflows/ci.yml/badge.svg)](https://github.com/fuxingloh/airtable/actions/workflows/ci.yml)
+[![CI](https://github.com/fuxingloh/airtable/actions/workflows/ci.yml/badge.svg?branch=master&event=push)](https://github.com/fuxingloh/airtable/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/fuxingloh/airtable/branch/master/graph/badge.svg?token=GF8N55YZQ1)](https://codecov.io/gh/fuxingloh/airtable)
 [![maven-central](https://img.shields.io/maven-central/v/dev.fuxing/airtable-api)](https://search.maven.org/artifact/dev.fuxing/airtable-api)
 
@@ -274,6 +269,6 @@ compile group: 'dev.fuxing', name: 'airtable-api', version: '0.3.2'
 compile group: 'dev.fuxing', name: 'airtable-mirror', version: '0.3.2'
 ```
 
-# Testing & Publishing
+# Testing
 
-> https://airtable.com/shrTMCxjhQIF2ZJDe
+https://airtable.com/shrTMCxjhQIF2ZJDe is used to run test against a real instance.
