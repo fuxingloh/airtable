@@ -16,7 +16,7 @@ subprojects {
     apply plugin: 'jacoco'
 
     group 'dev.fuxing'
-    version '0.3.1'
+    version '0.3.2'
 
     ext.jUnitVersion = '5.4.2'
     ext.guiceVersion = '4.2.2'

@@ -7,6 +7,10 @@ This library support all features available in https://airtable.com/api.
 **JDK:** Java 8<br>
 **Code Coverage:** 71% 
 
+[![CI](https://github.com/fuxingloh/airtable/actions/workflows/ci.yml/badge.svg)](https://github.com/fuxingloh/airtable/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/fuxingloh/airtable/branch/master/graph/badge.svg?token=GF8N55YZQ1)](https://codecov.io/gh/fuxingloh/airtable)
+[![maven-central](https://img.shields.io/maven-central/v/dev.fuxing/airtable-api)](https://search.maven.org/artifact/dev.fuxing/airtable-api)
+
 # Features:
 * Supports the new batch API 
 * Supports all fields
@@ -40,7 +44,7 @@ Hosted in Maven Central.
 ```
 ### Gradle
 ```groovy
-compile group: 'dev.fuxing', name: 'airtable-api', version: '0.3.1'
+compile group: 'dev.fuxing', name: 'airtable-api', version: '0.3.2'
 ```
 
 # Example
@@ -200,8 +204,8 @@ List<AirtableRecord> results = cache.query(querySpec -> {
 
 #### Gradle Dependencies
 ```groovy
-compile group: 'dev.fuxing', name: 'airtable-api', version: '0.3.1'
-compile group: 'dev.fuxing', name: 'airtable-cache', version: '0.3.1'
+compile group: 'dev.fuxing', name: 'airtable-api', version: '0.3.2'
+compile group: 'dev.fuxing', name: 'airtable-cache', version: '0.3.2'
 ```
 # Mirror Module
 > Use Airtable as your stateless database view for EDA.
@@ -266,10 +270,10 @@ ses.scheduleAtFixedRate(mirror, 0, 6, TimeUnit.HOURS);
 
 #### Gradle Dependencies
 ```groovy
-compile group: 'dev.fuxing', name: 'airtable-api', version: '0.3.1'
-compile group: 'dev.fuxing', name: 'airtable-mirror', version: '0.3.1'
+compile group: 'dev.fuxing', name: 'airtable-api', version: '0.3.2'
+compile group: 'dev.fuxing', name: 'airtable-mirror', version: '0.3.2'
 ```
 
-# Testing
+# Testing & Publishing
 
 > https://airtable.com/shrTMCxjhQIF2ZJDe
