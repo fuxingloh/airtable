@@ -43,6 +43,15 @@ subprojects {
 
     test {
         useJUnitPlatform()
+        finalizedBy jacocoTestReport
+    }
+
+    jacocoTestReport {
+        reports {
+            xml.enabled true
+            html.enabled false
+        }
+        dependsOn test
     }
 
     task javadocJar(type: Jar) {
@@ -107,13 +116,6 @@ subprojects {
                     }
                 }
             }
-        }
-    }
-
-    jacocoTestReport {
-        reports {
-            xml.enabled true
-            html.enabled false
         }
     }
 }

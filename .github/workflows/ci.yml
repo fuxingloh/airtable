@@ -22,13 +22,10 @@ jobs:
       - name: Gradle setup
         uses: gradle/gradle-build-action@v2
 
-      - name: Gradle check
-        run: ./gradlew check
+      - name: Gradle test
+        run: ./gradlew test
         env:
           AIRTABLE_API_KEY: ${{ secrets.AIRTABLE_API_KEY }}
-
-      - name: Gradle coverage
-        run: ./gradlew codeCoverageReport
 
       - uses: codecov/codecov-action@e3c560433a6cc60aec8812599b7844a7b4fa0d71
         with:
